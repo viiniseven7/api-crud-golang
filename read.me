@@ -1,0 +1,113 @@
+📘 Manual de Utilização da API - Go Books
+Esta API permite o gerenciamento de utilizadores e a busca de livros integrada com o Google Books. O sistema utiliza autenticação via JWT (JSON Web Token) para proteger rotas sensíveis.
+Base URL: http://localhost:8080
+
+🔐 1. Autenticação
+Para acessar as rotas protegidas (como a busca de livros), é necessário obter um Token.
+Fazer Login
+Gera um token de acesso válido por 6 horas.
+Endpoint: /login
+Método: POST
+Corpo da Requisição (JSON):
+JSON
+{
+  "email": "seuemail@gmail.com",
+  "password": "suasenha123"
+}
+
+
+Resposta (Sucesso - 200 OK):
+Retorna uma string contendo o Token JWT.
+Plaintext
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+
+
+📚 2. Livros (Rota Protegida)
+Esta rota consulta a API do Google Books e retorna uma lista simplificada. Requer Autenticação.
+Buscar Livros
+Endpoint: /books
+Método: GET
+Parâmetros (Query Params):
+q: O termo a ser pesquisado (ex: nome do livro ou autor).
+Headers Obrigatórios:
+Authorization: Bearer <SEU_TOKEN_AQUI>
+Exemplo de URL:
+http://localhost:8080/books?q=golang
+Resposta (Sucesso - 200 OK):
+JSON
+[
+  {
+    "titulo": "The Go Programming Language",
+    "autores": [
+      "Alan A. A. Donovan",
+      "Brian W. Kernighan"
+    ],
+    "descricao": "Resource for learning Go...",
+    "imagem": "http://books.google.com/..."
+  },
+  {
+    "titulo": "Go in Action",
+    "autores": ["William Kennedy"],
+    "descricao": "Go in Action introduces the Go language...",
+    "imagem": "http://books.google.com/..."
+  }
+]
+
+
+Erros Comuns:
+401 Unauthorized: Token inválido, expirado ou ausente.
+400 Bad Request: Falta o parâmetro ?q= na URL.
+
+👤 3. Gerenciamento de Usuários
+Endpoints para criar e gerir os utilizadores do sistema.
+Criar Usuário (Cadastro)
+Endpoint: /users
+Método: POST
+Corpo da Requisição (JSON):
+JSON
+{
+  "nome": "João da Silva",
+  "email": "joao@gmail.com",
+  "password": "senhaForte123",
+  "cpf": "12345678900"
+}
+
+
+Resposta: 201 Created com o ID do usuário criado.
+Listar Todos os Usuários
+Endpoint: /users
+Método: GET
+Resposta: Lista JSON com todos os usuários (sem a senha).
+Buscar Usuário por ID
+Endpoint: /users/{userID}
+Método: GET
+Exemplo: /users/1
+Atualizar Usuário
+Endpoint: /users/{userID}
+Método: PUT
+Corpo da Requisição (JSON):
+JSON
+{
+  "nome": "João Silva Editado",
+  "email": "joao.novo@gmail.com"
+}
+
+
+(Nota: Apenas Nome e Email são atualizados nesta rota)
+Deletar Usuário
+Endpoint: /users/{userID}
+Método: DELETE
+Resposta: 204 No Content
+
+⚙️ Configuração e Execução
+Pré-requisitos
+Banco de Dados: MySQL rodando na porta 3306.
+Schema: É necessário criar o banco bancogo e a tabela users.
+Como Rodar
+No terminal, dentro da pasta do projeto:
+Bash
+go mod tidy  # Para baixar as dependências
+go run main.go
+
+O servidor iniciará em Listening on :8080.
